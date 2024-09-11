@@ -87,6 +87,11 @@ jobs:
 
       - name: Accept all asv questions
         run: asv machine --yes
+      
+      - name: Add TARDIS install command to asv config file
+        run: |
+          TARDIS_INSTALL_CMD="pip install git+https://github.com/tardis-sn/tardis.git" # @${{ env.TARDIS_VER }}"
+          cat <<< $(jq '.build_command |= [$TARDIS_INSTALL_CMD] + .' --arg TARDIS_INSTALL_CMD "${TARDIS_INSTALL_CMD}" asv.conf.json) > asv.conf.json
 
       - name: Run benchmarks for last 5 commits if not PR
         if: github.event_name != 'pull_request_target'
